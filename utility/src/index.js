@@ -1,6 +1,9 @@
 import Main from "./pages/Main";
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { store } from "./store";
+import { AuthManager } from "@utility/AuthManager";
+import { Provider } from "react-redux";
 
 const root = ReactDOM.createRoot(document.getElementById("layaout"));
 const App = () => (
@@ -10,4 +13,8 @@ const App = () => (
   </div>
 );
 
-root.render(<App />);
+root.render(
+  <Provider store={store}>
+    <App />
+  </Provider>
+);
