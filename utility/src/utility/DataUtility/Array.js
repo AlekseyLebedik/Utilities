@@ -1,4 +1,5 @@
-import { indexOf, concat } from "lodash";
+import { get, set } from "lodash";
+import { returnedPathForObject } from "./Object";
 
 const MOCK = [
   {
@@ -26,43 +27,31 @@ const MOCK = [
 ];
 
 const addFieldToExistingOnes = (
-  whichObject,
-  lookingForFiledValue,
-  addField,
-  existingArray = MOCK
+  findObjectKey,
+  checkObjectValue,
+  addFieldKey,
+  addFieldValue,
+  existingDataInstanse = MOCK
 ) => {
-  let returnedData;
-  switch (whichObject.__proto__.constructor.name) {
-    case "Object":
-      const indexArray = indexOf(existingArray, [
-        ...Object.keys(whichObject),
-        ...Object.values(whichObject),
-      ]);
+  let returnedData, path;
 
-      if (indexArray !== -1) {
-        const convertedObject = [
-            ...existingArray[indexArray],
-            {
-              [lookingForFiledValue]: concat(
-                existingArray[indexArray][lookingForFiledValue],
-                addField
-              ),
-            },
-          ],
-          returnedData = [...existingArray, ...convertedObject];
-        console.log({ returnedData });
-      }
-      console.log(existingArray, indexArray, [
-        ...Object.keys(whichObject),
-        ...Object.values(whichObject),
-      ]);
-      break;
+  switch (existingDataInstanse.__proto__.constructor.name) {
     case "Array":
-      console.log("Array");
-      break;
-    case "String":
-      console.log("String");
-      break;
+      returnedData = existingDataInstanse.map((exist) => {
+        const checkObject =
+          get(exist, returnedPathForObject(findObjectKey, exist, null)) ===
+          checkObjectValue;
+        if (checkObject) {
+          path = returnedPathForObject(addFieldKey, exist, null);
+          set(exist, path, addFieldValue);
+        }
+        return exist;
+      });
+      return returnedData;
+    case "Object":
+      path = returnedPathForObject(addFieldKey, existingDataInstanse, null);
+      set(existingDataInstanse, path, addFieldValue);
+      return existingDataInstanse;
   }
 };
 
