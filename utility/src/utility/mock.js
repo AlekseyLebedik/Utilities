@@ -23,6 +23,47 @@ const MOCK = [
   },
 ];
 
+const DEEP_MOCK = [
+  {
+    user: {
+      some: { deep: { deep_1: { deep_2: { id: 0 } } } },
+      name: "Amady",
+      title: "Job",
+    },
+    protocol: { status: 200, returned_data: ["hu", "is"] },
+  },
+  {
+    user: {
+      some: { deep: { deep_1: { deep_2: { id: 0 } } } },
+      name: "Sumrak",
+      title: "Job-1",
+    },
+    protocol: { status: 200, returned_data: ["Sumrak here", "is you"] },
+  },
+  {
+    user: {
+      some: { deep: { deep_1: { deep_2: { id: 0 } } } },
+      name: "Abraham",
+      title: "Job-1",
+    },
+    protocol: {
+      status: 201,
+      returned_data: ["I am Abraham who lived a long time ago?", "Im not him"],
+    },
+  },
+  {
+    user: {
+      some: { deep: { deep_1: { deep_2: { id: 0 } } } },
+      name: "Samanta",
+      title: "Job",
+    },
+    protocol: {
+      status: 301,
+      returned_data: ["I'm the only girl here.", "yeap"],
+    },
+  },
+];
+
 const MOCK_1 = [
   {
     user: { id: 0, name: "Amady", title: "Job" },
@@ -53,4 +94,4 @@ const MOCK_2 = [
   { id: 1, title: "lkdiid" },
 ];
 
-export { MOCK, MOCK_1, MOCK_2 };
+export { MOCK, MOCK_1, MOCK_2, DEEP_MOCK };

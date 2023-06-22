@@ -1,49 +1,58 @@
-const returnedPathForObject = (
-  findKey,
-  item,
-  itemIndex,
-  originalPath = false
-) => {
-  const path = [];
-  let bufferKeys, deepKeys;
-  if (item.__proto__.constructor.name === "Object") {
-    bufferKeys = Object.keys(item);
-    if (bufferKeys.includes(findKey) && path.length === 0) {
-      if (itemIndex !== null) path.push(`[${itemIndex}]`);
-      path.push(findKey);
-      if (originalPath) return path;
-      return path.length > 1 ? path.join(".") : path.join();
-    }
-    //--!TODO ---> if we dont found our field to move on
-    bufferKeys.forEach((key) => {
-      deepKeys = Object.keys(item[key]);
-      if (path.length > 0) return;
-      //Second deep
-      if (deepKeys.includes(findKey) && path.length === 0) {
-        if (itemIndex !== null) path.push(`[${itemIndex}]`);
-        path.push(key, findKey);
-        if (originalPath) return path;
-        return path.length > 2 ? path.join(".") : path.join();
-      }
+import { isEmpty, get } from "lodash";
 
-      deepKeys.forEach((deepKey) => {
-        if (typeof item[key][deepKey] === "object") {
-          if (
-            Object.keys(item[key][deepKey]).includes(findKey) &&
-            path.length === 0
-          ) {
-            if (itemIndex !== null) path.push(`[${itemIndex}]`);
-            path.push(key, deepKey, findKey);
-            if (originalPath) return path;
-            return path.length > 1 ? path.join(".") : path.join();
-          }
-        }
-      });
-    });
+/*PATH FIELD OBJECT*/
+const pathFieldObject = ({ findKey, item, withKey }) => {
+  const recursiveObject = (obj, findKey, path = [], pathInstance = []) => {
+    if (obj.__proto__.constructor.name !== "Object") {
+      return [];
+    }
+
+    let result = [];
+    for (const [key, _] of Object.entries(obj)) {
+      if (Object.keys(obj[key]).includes(findKey) && path.length === 0) {
+        result = [...pathInstance, key];
+
+        break;
+      }
+      const newPathInstance = [...pathInstance, key];
+
+      result = recursiveObject(obj[key], findKey, path, newPathInstance);
+
+      if (result.length > 0) {
+        break;
+      }
+    }
+
+    return result;
+  };
+
+  if (item.__proto__.constructor.name === "Object") {
+    const path = recursiveObject(item, findKey);
+
+    if (withKey) path.push(findKey);
+
+    return path.length > 1 ? path.join(".") : path.join();
   }
-  if (path.length === 0) return null;
-  if (originalPath) return path;
-  return path.join(".");
+
+  return null;
 };
 
-export { returnedPathForObject };
+/*DEEP EMPTY CHECK*/
+
+const isDeepEmpty = (fieldCheck, obj) => {
+  switch (obj.__proto__.constructor.name) {
+    case "Object":
+      const path = returnedPathForObject(fieldCheck, obj);
+
+      return { isEmpty: isEmpty(get(obj, path)) };
+
+    case "Array":
+      return obj.map((objItem) => {
+        const path = returnedPathForObject(fieldCheck, objItem);
+        return { isEmpty: isEmpty(get(objItem, path)) };
+      });
+  }
+  return { isEmpty: true };
+};
+
+export { pathFieldObject, isDeepEmpty };
