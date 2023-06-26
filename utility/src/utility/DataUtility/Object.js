@@ -55,4 +55,7 @@ const isDeepEmpty = (fieldCheck, obj) => {
   return { isEmpty: true };
 };
 
-export { pathFieldObject, isDeepEmpty };
+const sortedByArrayOrder = (orderArray, obj) =>
+  orderArray.reduce((acc, key) => ({ ...acc, [key]: obj[key] }), {});
+
+export { pathFieldObject, isDeepEmpty, sortedByArrayOrder };
